@@ -55,6 +55,9 @@
     "prepare": "husky"
   },
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",

@@ -4,9 +4,10 @@ An [Expo](https://expo.dev) app using [file-based routing](https://docs.expo.dev
 
 ## Get started
 
-1. Install dependencies
+1. Use the pinned Node version ([.nvmrc](.nvmrc)) and install dependencies
 
    ```bash
+   nvm use
    npm install
    ```
 
