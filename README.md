@@ -56,14 +56,66 @@ src/types/        shared TypeScript types
 tests/            shared test examples
 ```
 
-Rule of thumb:
+### Architecture rules
 
-- `app/` is for routing.
-- `features/` is for product logic.
-- `components/ui/` is for reusable design.
-- `lib/` is for infrastructure.
+- `src/app/` is for routes and layouts only — no business logic.
+- `src/features/` is for feature-specific screens, hooks, components, and local logic.
+- `src/components/ui/` is for reusable UI primitives.
+- `src/lib/` is for infrastructure code such as storage, API clients, analytics, and notifications.
+- `src/theme/` owns design tokens and theme resolution.
+- `src/i18n/` owns translations and locale selection.
 
-Every module currently contains a minimal placeholder — fill each in as the corresponding feature is built, or delete what you don't need. See [docs/structure.md](docs/structure.md) for the full write-up.
+Route files stay thin on purpose — they just point to a screen component inside a feature module, so routing and business logic never collapse into the same file (see [(auth)/welcome.tsx](<src/app/(auth)/welcome.tsx>) → [features/auth/screens/welcome.tsx](src/features/auth/screens/welcome.tsx)).
+
+Every module currently contains a minimal placeholder marked `// TODO` — fill each in as the corresponding feature is built, or delete what you don't need. See [docs/structure.md](docs/structure.md) for the full write-up.
+
+## Included examples
+
+Everything below is scaffolded as a working but empty placeholder — the point is the wiring, not the content. Replace the `// TODO` in each file as you build the real thing.
+
+### Routing
+
+- [`(auth)`](<src/app/(auth)>) public route group — `welcome`, `login`, `signup`
+- [`(main)`](<src/app/(main)>) protected route group
+- [`(main)/(tabs)`](<src/app/(main)/(tabs)>) tab layout — `index` (home), `components`, `settings`
+- [`+not-found.tsx`](src/app/+not-found.tsx) catch-all route
+- root auth boundary in [`_layout.tsx`](src/app/_layout.tsx) using `Stack.Protected`, switching between `(auth)` and `(main)` on a signed-in flag
+
+### Auth
+
+A stub session context, not a real auth flow — wire in a real provider (Firebase, Clerk, your own API, etc.) when you're ready.
+
+- [`features/auth/auth-session.tsx`](src/features/auth/auth-session.tsx) — `SessionProvider` / `useSession`, currently hardcoded to signed-out
+- [`features/auth/hooks/use-auth-form.ts`](src/features/auth/hooks/use-auth-form.ts)
+- [`features/auth/screens/welcome.tsx`](src/features/auth/screens/welcome.tsx), [`login.tsx`](src/features/auth/screens/login.tsx), [`signup.tsx`](src/features/auth/screens/signup.tsx)
+
+### UI components
+
+[`src/components/ui`](src/components/ui) has empty-shell versions of common primitives, each typed but unstyled:
+
+`Alert` `AppText` `AppToaster` `Avatar` `Badge` `Button` `Card` `CheckboxRow` `Divider` `EmptyState` `HeroPanel` `IconButton` `Icon` `Input` `ListRow` `LoadingIndicator` `ProgressBar` `Screen` `SectionHeader` `SegmentedControl` `StatCard` `ToggleRow`
+
+The [`/components`](<src/app/(main)/(tabs)/components.tsx>) tab is meant to become a gallery of these once they're built out — right now it's a placeholder screen.
+
+### Theme
+
+[`src/theme`](src/theme) has empty token files (`colors`, `spacing`, `radius`, `typography`, `motion`) and a [`theme-provider.tsx`](src/theme/theme-provider.tsx) hardcoded to `light`. Fill in the tokens and wire up light/dark/system resolution when you have a design direction.
+
+### Internationalization
+
+[`src/i18n`](src/i18n) has an empty [`i18n-provider.tsx`](src/i18n/i18n-provider.tsx) and empty `en.ts` / `es.ts` dictionaries under [`translations/`](src/i18n/translations). No locale-switching logic exists yet.
+
+### Infrastructure examples
+
+[`src/lib`](src/lib) shows where infra code should live, each file a thin stub:
+
+- [`api/workspace-api.ts`](src/lib/api/workspace-api.ts) — API client shape
+- [`analytics/`](src/lib/analytics) — client + event name constants
+- [`notifications/`](src/lib/notifications) — client + content templates
+- [`storage/`](src/lib/storage) — `app-storage.ts` (key/value wrapper), `preferences-storage.ts`
+- [`toast/app-toast.ts`](src/lib/toast/app-toast.ts)
+
+None of these call a real backend or vendor SDK — they're deliberately empty so you can drop in whichever service you actually use.
 
 ### Path aliases
 
@@ -122,6 +174,17 @@ Commits must follow [Conventional Commits](https://www.conventionalcommits.org/)
 git commit -m "feat: add login screen"
 git commit -m "fix: correct token refresh timing"
 ```
+
+## Customizing this template
+
+After cloning, you'll usually want to:
+
+1. Rename the app in [`app.json`](app.json) and [`package.json`](package.json).
+2. Replace the stub `SessionProvider` in [`features/auth/auth-session.tsx`](src/features/auth/auth-session.tsx) with your real auth provider.
+3. Replace `features/component-showcase` with your first real feature.
+4. Fill in tokens in [`src/theme`](src/theme) to match your brand.
+5. Fill in translations under [`src/i18n/translations`](src/i18n/translations), or delete `i18n/` if you don't need it.
+6. Replace placeholder assets in [`assets/images`](assets/images).
 
 ## Get a fresh project
 
